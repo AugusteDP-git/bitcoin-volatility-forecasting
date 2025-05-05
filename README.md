@@ -1,1 +1,1 @@
-#Temporal mixture models for Bitcoin volatility prediction
+# Temporal mixture models for Bitcoin volatility prediction
