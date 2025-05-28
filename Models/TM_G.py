@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class TM_G(nn.Module):
-    def __init__(self, n_features, lv = 5, lb=30, step_ahead = 1, learning_rate=0.01, lambda_reg=0.01, alpha = 10):
+    def __init__(self, n_features, lv = 5, lb=30, step_ahead = 1, learning_rate=0.01, lambda_reg=0.01, alpha = 10, lambda_entropy = 1):
         """
         Gaussian Temporal Mixture Model
 
@@ -29,6 +29,7 @@ class TM_G(nn.Module):
         self.n_features = n_features
         self.lambda_reg = lambda_reg
         self.alpha = alpha
+        self.lambda_entropy = lambda_entropy
 
         self.phi = nn.Parameter(torch.empty(lv))
 
@@ -45,8 +46,11 @@ class TM_G(nn.Module):
                 param.data = torch.nn.init.xavier_uniform_(param.unsqueeze(0)).squeeze(0)
             else:
                 torch.nn.init.xavier_uniform_(param)
+        self.optimizer = optim.RAdam(self.parameters(), lr=learning_rate)
 
-        self.optimizer = optim.Adam(self.parameters(), lr=learning_rate)
+        
+        
+        
 
     def forward(self, vol_history, order_book_feats):
         """
@@ -67,8 +71,8 @@ class TM_G(nn.Module):
         bilinear = self.U @ order_book_feats @ self.V
         mu_h1 = bilinear
 
-        g_hist = F.softplus(torch.sum(self.theta * vol_history, dim=1))
-        g_order = F.softplus(self.A.T @ order_book_feats @ self.B)
+        g_hist = F.softplus(torch.sum(self.theta * vol_history, dim=1), beta = 1)
+        g_order = F.softplus(self.A.T @ order_book_feats @ self.B, beta = 1)
 
         gating = g_hist / (g_hist + g_order + 1e-6)
 
@@ -94,12 +98,14 @@ class TM_G(nn.Module):
         likelihood = torch.logsumexp(torch.stack([comp_0, comp_1]), dim=0)
 
         neg_log_likelihood = -torch.sum(likelihood)
+        entropy = - (gating * torch.log(gating + 1e-8) + (1 - gating) * torch.log(1 - gating + 1e-8))
+        entropy_reg = self.lambda_entropy * torch.mean(entropy)
 
 
         l2_reg = self.lambda_reg * sum(torch.sum(p ** 2) for p in self.parameters())
         hinge_reg_u = self.alpha * torch.sum(F.relu(-mu_h1))
 
-        total_loss = neg_log_likelihood + l2_reg + hinge_reg_u
+        total_loss = neg_log_likelihood + l2_reg + hinge_reg_u - entropy_reg
 
         return total_loss
 
@@ -208,5 +214,5 @@ class TM_G(nn.Module):
 
 
         return y_pred, y_true, gating
-    
-    
+
+
