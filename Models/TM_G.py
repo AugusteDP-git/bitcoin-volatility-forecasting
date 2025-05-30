@@ -8,7 +8,7 @@ from tqdm import tqdm
 
 
 class TM_G(nn.Module):
-    def __init__(self, n_features, lv = 5, lb=30, step_ahead = 1, learning_rate=0.01, lambda_reg=0.01, alpha = 10, lambda_entropy = 1):
+    def __init__(self, n_features, lv = 5, lb=30, step_ahead = 1, learning_rate=0.01, lambda_reg=0.01, alpha = 10, lambda_entropy = 3e3):
         """
         Gaussian Temporal Mixture Model
 
@@ -41,12 +41,13 @@ class TM_G(nn.Module):
         self.B = torch.zeros(lb)
         self.B[0] = 1
 
-        for param in [self.phi,  self.U, self.V ,self.theta, self.A, self.B]:
+        for param in [self.phi,  self.U, self.V ,self.theta, self.A]:
             if param.ndim == 1:
                 param.data = torch.nn.init.xavier_uniform_(param.unsqueeze(0)).squeeze(0)
             else:
                 torch.nn.init.xavier_uniform_(param)
         self.optimizer = optim.RAdam(self.parameters(), lr=learning_rate)
+        
 
         
         
@@ -98,7 +99,7 @@ class TM_G(nn.Module):
         likelihood = torch.logsumexp(torch.stack([comp_0, comp_1]), dim=0)
 
         neg_log_likelihood = -torch.sum(likelihood)
-        entropy = - (gating * torch.log(gating + 1e-8) + (1 - gating) * torch.log(1 - gating + 1e-8))
+        entropy = - (gating * torch.log(gating + 1e-15) + (1 - gating) * torch.log(1 - gating + 1e-8))
         entropy_reg = self.lambda_entropy * torch.mean(entropy)
 
 
@@ -214,5 +215,3 @@ class TM_G(nn.Module):
 
 
         return y_pred, y_true, gating
-
-
