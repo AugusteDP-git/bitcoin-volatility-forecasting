@@ -214,4 +214,4 @@ class TM_G(nn.Module):
           y_true = np.array(y_true)
 
 
-        return y_pred, y_true, gatin
+        return y_pred, y_true, gating
