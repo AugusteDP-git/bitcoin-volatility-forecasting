@@ -8,8 +8,8 @@ from tqdm import tqdm
 
 
 
-class TM_GS(nn.Module):
-    def __init__(self, n_features, lv=30, lb=30, step_ahead = 24, learning_rate=0.01, lambda_reg=0.01, alpha=0.1):
+class TM_SG(nn.Module):
+    def __init__(self, n_features, lv=5, lb=30, ls = 2, step_ahead = 1, learning_rate=0.01, lambda_reg=0.01, alpha=0.1):
         """
         Gaussian Temporal Mixture Model w. sentiment
 
@@ -22,23 +22,24 @@ class TM_GS(nn.Module):
         - alpha: Hinge loss regularization coefficient
         """
 
-        super(TM_GS, self).__init__()
+        super(TM_SG, self).__init__()
         self.step_ahead = step_ahead
 
         self.lv = lv
         self.lb = lb
+        self.ls = ls
         self.n_features = n_features
         self.lambda_reg = lambda_reg
         self.alpha = alpha
 
         self.phi = nn.Parameter(torch.empty(lv))
-        self.psi = nn.Parameter(torch.empty(lv))
+        self.psi = nn.Parameter(torch.empty(ls))
 
         self.U = nn.Parameter(torch.empty(n_features))
         self.V = nn.Parameter(torch.empty(lb))
 
         self.theta = nn.Parameter(torch.empty(lv))
-        self.xi = nn.Parameter(torch.empty(lv))
+        self.xi = nn.Parameter(torch.empty(ls))
         self.A = nn.Parameter(torch.empty(n_features))
         self.B = nn.Parameter(torch.empty(lb))
 
@@ -126,22 +127,23 @@ class TM_GS(nn.Module):
         return loss.item()
     
     def prepare_train_data(self, df):
-        lv, lb = self.lv, self.lb
+        lv, ls, lb = self.lv, self.ls, self.lb
+        L = max(lv, ls, lb)
 
         OB_feats = np.stack([
                     df.iloc[j - lb:j].drop(columns=["vol", 'sentiment']).values.T
-                    for j in range(lb, len(df)-self.step_ahead)
+                    for j in range(L, len(df)-self.step_ahead)
         ])
 
         vol_history = np.stack([
-            df["vol"].iloc[j - lv:j].values for j in range(lv, len(df)-self.step_ahead)
+            df["vol"].iloc[j - lv:j].values for j in range(L, len(df)-self.step_ahead)
         ], axis = 0)
 
         sentiment = np.stack([
-            df["sentiment"].iloc[j - lv:j].values for j in range(lv, len(df)-self.step_ahead)
+            df["sentiment"].iloc[j - ls:j].values for j in range(L, len(df)-self.step_ahead)
         ], axis = 0)
 
-        vol_target = df["vol"].iloc[lv:].reset_index(drop=True).shift(-self.step_ahead).dropna().reset_index(drop=True)
+        vol_target = df["vol"].iloc[L:].reset_index(drop=True).shift(-self.step_ahead).dropna().reset_index(drop=True)
         
         return (
             torch.tensor(vol_history, dtype = torch.float32),
@@ -165,7 +167,6 @@ class TM_GS(nn.Module):
         qbar = tqdm(range(epochs))
         for epoch in qbar:
             loss = self.fit_step(vol_target, vol_history, OB_feats, sentiment)
-            qbar.set_postfix(loss=f"{loss:.6f}")
             losses.append(loss)
 
         return losses
@@ -173,20 +174,21 @@ class TM_GS(nn.Module):
     def prepare_data(self, df, feature_cols, lv, lb, step_ahead):
         df = df.copy()
         df = df.dropna().reset_index(drop=True)
+        L = max(lv, lb, self.ls)
 
         vol_history = np.stack([
             df["vol"].iloc[j - lv:j].values
-            for j in range(lv, len(df) - step_ahead)
+            for j in range(L, len(df) - step_ahead)
         ])
         order_book_feats = np.stack([
             df.iloc[j - lb:j][feature_cols].values.T
-            for j in range(lb, len(df) - step_ahead)
+            for j in range(L, len(df) - step_ahead)
         ])
-        vol_target = df["vol"].iloc[max(lv, lb):].reset_index(drop=True)
+        vol_target = df["vol"].iloc[L:].reset_index(drop=True)
 
         sentiment = np.stack([
-            df["sentiment"].iloc[j - lv:j].values
-            for j in range(lv, len(df) - step_ahead)
+            df["sentiment"].iloc[j - self.ls:j].values
+            for j in range(L, len(df) - step_ahead)
         ])
 
         min_len = min(len(vol_history), len(order_book_feats), len(vol_target), len(sentiment))

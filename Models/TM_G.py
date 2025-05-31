@@ -160,7 +160,6 @@ class TM_G(nn.Module):
         qbar = tqdm(range(epochs))
         for epoch in qbar:
             loss = self.fit_step(vol_target, vol_history, OB_feats)
-            qbar.set_postfix(loss=f"{loss:.6f}")
             losses.append(loss)
 
         return losses
