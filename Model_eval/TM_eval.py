@@ -47,15 +47,4 @@ def evaluate_STM(model, df_test, plot = True):
         plt.title("Volatility Prediction")
         plt.show()
 
-        plt.figure(figsize=(10, 4))
-        plt.stackplot(range(len(g_hist)), g_hist, g_order, g_sentiment,
-                    labels=['g_hist', 'g_order', 'g_sentiment'])
-
-        plt.title("Contribution of Gate Components Over Time")
-        plt.xlabel("Time Steps")
-        plt.ylabel("Proportion of Contribution")
-        plt.legend()
-        plt.grid(True, linestyle='--', alpha=0.5)
-        plt.show()
-
-    return rmse, mae, y_pred
+        plt.figure(figsize=(10, 
