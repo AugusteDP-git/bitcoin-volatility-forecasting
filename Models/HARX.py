@@ -64,7 +64,7 @@ class HARXSimulator:
             self.pred = np.concatenate((self.pred, preds)) if self.pred.size else preds
             self.true = np.concatenate((self.true, Y_test)) if self.true.size else Y_test
 
-            mae = mean_absolute_error(Y_test, preds)
+            mae = mean_absolute_error(Y_test, preds)/100
             rmse = np.sqrt(mean_squared_error(Y_test, preds)) / 100
 
             self.results.append({
