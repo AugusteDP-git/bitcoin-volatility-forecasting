@@ -32,7 +32,7 @@ def evaluate_TM(model, df_test, plot = True):
 
   
 
-    return rmse, mae, y_pred, y_true
+    return rmse, mae, y_pred[30 - max(model.lv, model.lb):], y_true
 
 def evaluate_STM(model, df_test, plot = True):
     y_pred, y_true, g_hist, g_order, g_sentiment = model.predict(df_test)
@@ -58,4 +58,4 @@ def evaluate_STM(model, df_test, plot = True):
         plt.grid(True, linestyle='--', alpha=0.5)
         plt.show()
 
-    return rmse, mae, y_pred
+    return rmse, mae, y_pred[30 - max(model.lv, model.lb, model.ls):] 
