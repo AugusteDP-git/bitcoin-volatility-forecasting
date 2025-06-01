@@ -60,3 +60,7 @@ def cross_validation_S(df_train, df_validate):
             best_params = {
                 'lb' : lb,
                 'lambda_reg': lambda_reg
+            }
+  return best_params
+
+
