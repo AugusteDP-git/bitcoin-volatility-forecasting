@@ -95,8 +95,8 @@ class HARSimulator:
 
     def plot_predictions(self):
         plt.figure(figsize=(12, 5))
-        plt.plot(self.true, label='true')
-        plt.plot(self.pred, label='predictions')
+        plt.plot(self.true, label='true',color='blue',linestyle='--')
+        plt.plot(self.pred, label='predictions',color='red',linewidth=2)
         plt.legend()
         model_name = "Flexible HAR" if self.use_lasso else f"HAR({', '.join(map(str, self.fixed_windows))})"
         plt.title(f"Walk-forward predictions - {model_name} with {self.mode} testing")
