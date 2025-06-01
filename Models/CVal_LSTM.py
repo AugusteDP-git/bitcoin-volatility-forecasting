@@ -1,7 +1,7 @@
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import mean_squared_error, mean_absolute_error
-
-
+from Models.LSTM import DualLSTMModel
+from Model_eval.LSTM_eval import evaluate_model_mse
 
 param_grid = {
     'hidden_size_1': [32, 64, 128, 256],

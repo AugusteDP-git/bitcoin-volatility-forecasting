@@ -3,8 +3,7 @@ from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 from Models.TM_G import TM_G
 from Models.TM_SG import TM_SG
-def cross_validation(df_train, df_validate):
-  feature_cols = df_train.columns.difference(["vol"])
+def cross_validation(df_train, df_validate, feature_cols):
 
   scaler = StandardScaler()
   df_train[feature_cols] = scaler.fit_transform(df_train[feature_cols])
@@ -33,8 +32,7 @@ def cross_validation(df_train, df_validate):
         }
   return best_params
 
-def cross_validation_S(df_train, df_validate):
-  feature_cols = df_train.columns.difference(["vol", "sentiment"])
+def cross_validation_S(df_train, df_validate, feature_cols):
 
   scaler = StandardScaler()
   df_train[feature_cols] = scaler.fit_transform(df_train[feature_cols])

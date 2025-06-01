@@ -5,10 +5,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import random
-random.seed(42)
-np.random.seed(42)
-torch.manual_seed(42)
-torch.cuda.manual_seed_all(42)
+
 torch.backends.cudnn.deterministic = True
 torch.backends.cudnn.benchmark = False
 from sklearn.metrics import mean_squared_error, mean_absolute_error

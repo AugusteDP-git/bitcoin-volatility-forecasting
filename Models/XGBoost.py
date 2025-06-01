@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
-def test_xgboost(df: pd.DataFrame, n_lags: int = 5, n_splits: int = 10):
+def test_xgboost(df: pd.DataFrame, n_lags: int = 1, n_splits: int = 10):
     if 'timestamp' in df.columns:
         df = df.drop(columns=['timestamp'])
 
