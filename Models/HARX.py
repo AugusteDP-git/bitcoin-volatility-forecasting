@@ -76,8 +76,8 @@ class HARXSimulator:
 
     def plot_predictions(self):
         plt.figure(figsize=(12, 5))
-        plt.plot(self.true, label='true')
-        plt.plot(self.pred, label='predictions')
+        plt.plot(self.true, label='true',color='blue',linestyle='--')
+        plt.plot(self.pred, label='predictions',color='red',linewidth=2)
         plt.legend()
         plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with {self.mode} testing")
         plt.show()
