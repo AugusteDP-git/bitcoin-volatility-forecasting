@@ -82,6 +82,7 @@ class HARXSimulator:
         plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with {self.mode} testing")
         plt.show()
 
-    def summary(self):
+     def summary(self):
         df_results = pd.DataFrame(self.results)
-        return df_results
+        print(df_results[["window", "MAE", "RMSE", "Used Windows"]])
+        #print("Global RMSE:", np.sqrt(np.mean((self.true - self.pred) ** 2)))
