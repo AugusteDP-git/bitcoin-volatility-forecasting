@@ -104,6 +104,6 @@ class HARSimulator:
 
     def summary(self):
         df_results = pd.DataFrame(self.results)
-        #print(df_results[["window", "MAE", "RMSE", "Used Windows"]])
+        print(df_results[["window", "MAE", "RMSE", "Used Windows"]])
         #print("Global RMSE:", np.sqrt(np.mean((self.true - self.pred) ** 2)))
-        return df_results
+
