@@ -56,6 +56,4 @@ def evaluate_STM(model, df_test, plot = True):
         plt.ylabel("Proportion of Contribution")
         plt.legend()
         plt.grid(True, linestyle='--', alpha=0.5)
-        plt.show()
-
-    return rmse, mae, y_pred[30 - max(model.lv, model.lb, model.ls):] 
+        plt.show(
