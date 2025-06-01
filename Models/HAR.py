@@ -15,8 +15,8 @@ class HARSimulator:
         self.mode = mode  # 'rolling' or 'incremental'
         self.use_lasso = use_lasso
         self.fixed_windows = fixed_windows
-        self.train_size = 1120
-        self.test_size = 280
+        self.train_size = 1045
+        self.test_size = 260
         self.results = []
         self.pred = np.array([])
         self.true = np.array([])
