@@ -63,18 +63,16 @@ def test_xgboost(df: pd.DataFrame, n_lags: int = 5, n_splits: int = 10):
             random_state=42
         )
 
-        print("🔍 Running global grid search...")
         grid_search = GridSearchCV(
             estimator=base_model,
             param_grid=param_grid,
             scoring='neg_root_mean_squared_error',
             cv=3,
-            verbose=2,
+            verbose=0,
             n_jobs=-1
         )
         grid_search.fit(X_cv, y_cv)
         best_params = grid_search.best_params_
-        print("Best parameters:", best_params)
 
         model = XGBRegressor(
             **best_params,

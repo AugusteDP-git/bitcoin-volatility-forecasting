@@ -59,9 +59,8 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
     candidate_windows = list(range(77, 88))
 
     N = len(df)
-    print("Starting lookback window optimization...")
+    print("Starting lookback window cross validation...")
     for lb in candidate_windows:
-        print(f"Testing lookback window value: {lb}")
         window_rmses = []
 
         for i in range(lb, N - 1):
@@ -84,20 +83,19 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
             window_rmses.append(rmse / 100)
 
         mean_rmse = np.mean(window_rmses)
-        print(f"Mean RMSE for lb={lb}: {mean_rmse}")
 
         if mean_rmse < best_rmse:
             best_rmse = mean_rmse
             best_lb = lb
 
-    print(f"Best lookback window: {best_lb}")
+    print(f"Finished cross validation.")
 
     results = []
     all_preds = []
     all_trues = []
 
     lb = best_lb
-    print(f"Starting volatility prediction with lookback window: {lb}")
+    print(f"Starting volatility prediction ...")
 
     for i in range(lb, N - 1):
         train_set = df.iloc[i - lb:i]
@@ -134,8 +132,7 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
 
     results_df = pd.DataFrame(results)
 
-    print("\n Final Summary:")
-    print(results_df)
+    
 
     # Calculate mean RMSE for 10 equal intervals
     rmse_list = results_df['RMSE'].values
