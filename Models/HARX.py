@@ -12,8 +12,8 @@ class HARXSimulator:
         self.shift = shift
         self.har_windows = har_windows
         self.mode = mode  # 'rolling' or 'incremental'
-        self.train_size = 1120
-        self.test_size = 280
+        self.train_size = 1040
+        self.test_size = 260
         self.results = []
         self.pred = np.array([])
         self.true = np.array([])
