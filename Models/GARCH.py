@@ -1,11 +1,9 @@
+from arch import arch_model
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from arch import arch_model
-from sklearn.metrics import mean_squared_error, mean_absolute_error
 
-
-def garch_forecast(alpha0, alpha1, beta1, ut, ht, steps_ahead=5):
+def garch_forecast(alpha0, alpha1, beta1, ut, ht, steps_ahead=1):
     indicator = 1 if ut < 0 else 0
     ut_carre = ut**2
     base = alpha1 + beta1
@@ -40,7 +38,7 @@ def split_mean_rmse(rmse_series, n_intervals=10):
     return mean_rmses
 
 
-def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
+def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
     df_returns = df_returns.copy()
     df_vol = df_vol.copy()
     df_returns['timestamp'] = pd.to_datetime(df_returns['timestamp'])
@@ -56,10 +54,10 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
 
     best_lb = None
     best_rmse = float('inf')
-    candidate_windows = list(range(77, 88))
+    candidate_windows = list(range(70, 88))
 
     N = len(df)
-    print("Starting lookback window cross validation...")
+    print("Starting lookback window optimization...")
     for lb in candidate_windows:
         window_rmses = []
 
@@ -88,14 +86,13 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
             best_rmse = mean_rmse
             best_lb = lb
 
-    print(f"Finished cross validation.")
 
     results = []
     all_preds = []
     all_trues = []
 
     lb = best_lb
-    print(f"Starting volatility prediction ...")
+    print(f"Starting volatility prediction...")
 
     for i in range(lb, N - 1):
         train_set = df.iloc[i - lb:i]
@@ -128,29 +125,29 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame):
             "Alpha0": alpha0,
             "Alpha1": alpha1,
             "Beta1": beta1,
+            "PredictedGarch": pred_scaled
         })
 
     results_df = pd.DataFrame(results)
-
-    
-
-    # Calculate mean RMSE for 10 equal intervals
     rmse_list = results_df['RMSE'].values
     mean_rmse_intervals = split_mean_rmse(rmse_list, 10)
+    if plot:
+        # Calculate mean RMSE for 10 equal intervals
 
-    print("\nMean RMSE for each of the 10 intervals:")
-    for idx, val in enumerate(mean_rmse_intervals):
-        print(f"Interval {idx+1}: {val:.5f}")
 
-    plt.figure(figsize=(14, 6))
-    plt.plot(pd.Series(all_trues).reset_index(drop=True), label="True Volatility", color='blue', linestyle = '--')
-    plt.plot(pd.Series(all_preds).reset_index(drop=True), label="Predicted Volatility", color='red', linewidth = 2)
-    plt.title(f"GARCH - Combined Volatility Prediction (lookback={lb})")
-    plt.xlabel("Time Step")
-    plt.ylabel("Volatility")
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.show()
+        print("\nMean RMSE for each of the 10 intervals:")
+        for idx, val in enumerate(mean_rmse_intervals):
+            print(f"Interval {idx+1}: {val:.5f}")
+
+        plt.figure(figsize=(14, 6))
+        plt.plot(pd.Series(all_trues).reset_index(drop=True), label="True Volatility", color='blue', linestyle = '--')
+        plt.plot(pd.Series(all_preds).reset_index(drop=True), label="Predicted Volatility", color='red')
+        plt.title(f"GARCH - Combined Volatility Prediction (lookback={lb})")
+        plt.xlabel("Time Step")
+        plt.ylabel("Volatility")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
 
     return results_df, mean_rmse_intervals

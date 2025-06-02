@@ -6,7 +6,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error
 import statsmodels.api as sm
 
 class HARXSimulator:
-    def __init__(self, df, Y, shift, har_windows=[1, 6, 24], mode='rolling'):
+    def __init__(self, df, Y, shift, har_windows=[1, 6, 24], mode='rolling', GCT = False):
+        self.GCT = GCT
         self.df = df.copy()
         self.Y = Y
         self.shift = shift
@@ -23,6 +24,9 @@ class HARXSimulator:
             'bid_volume', 'ask_volume', 'volume_difference',
             'weighted_spread', 'bid_slope', 'ask_slope'
         ]
+        
+        if GCT:
+            self.exog_features = ['ask_depth', 'bid_depth', 'bid_volume', 'spread', 'volume_difference']
 
     def add_rolling_features(self):
         for wl in range(1, 31):
@@ -79,9 +83,12 @@ class HARXSimulator:
         plt.plot(self.true, label='true',color='blue',linestyle='--')
         plt.plot(self.pred, label='predictions',color='red',linewidth=2)
         plt.legend()
-        plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with {self.mode} testing")
+        if self.GCT:
+            plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with GCT features")
+        else:
+            plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with {self.mode} testing")
         plt.show()
 
     def summary(self):
         df_results = pd.DataFrame(self.results)
-        return df_results
+        print(df_results)

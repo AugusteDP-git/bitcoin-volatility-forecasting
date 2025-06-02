@@ -73,7 +73,7 @@ class HARSimulator:
                 print(f"[Bloc {outer + 1}] Aucune fenêtre retenue. Skipped.")
                 continue
 
-            print(f"[Bloc {outer + 1}] Fenêtres retenues : {best_windows}")
+            print(f"[Bloc {outer + 1}] Windows taken into account : {best_windows}")
 
             self.pred = np.concatenate((self.pred, preds)) if self.pred.size else preds
             self.true = np.concatenate((self.true, y_test)) if self.true.size else y_test
