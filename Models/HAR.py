@@ -8,7 +8,7 @@ from sklearn.model_selection import TimeSeriesSplit
 import statsmodels.api as sm
 
 class HARSimulator:
-    """Walk-forward simulation d’un HAR flexible (fenêtres 1-30 jours)."""
+    """Walk-forward simulation of a flexible HAR (1-30 day windows)."""
 
     def __init__(self, df, Y, shift, mode='rolling', use_lasso=True, fixed_windows=None):
         self.df = df.copy()
@@ -70,10 +70,10 @@ class HARSimulator:
                 best_windows = [i + 1 for i, c in enumerate(lasso.coef_) if c != 0]
 
             if len(best_windows) == 0:
-                print(f"[Bloc {outer + 1}] Aucune fenêtre retenue. Skipped.")
+                print(f"[Block {outer + 1}] No window retained. Skipped.")
                 continue
 
-            print(f"[Bloc {outer + 1}] Windows taken into account : {best_windows}")
+            print(f"[Block {outer + 1}] Windows taken into account : {best_windows}")
 
             self.pred = np.concatenate((self.pred, preds)) if self.pred.size else preds
             self.true = np.concatenate((self.true, y_test)) if self.true.size else y_test
@@ -81,18 +81,17 @@ class HARSimulator:
             mae = mean_absolute_error(y_test, preds) / 100
             rmse = np.sqrt(mean_squared_error(y_test, preds)) / 100
             self.results.append(
-                {"bloc": outer + 1, "MAE": mae, "RMSE": rmse, "Fenêtres utilisées": best_windows}
+                {"bloc": outer + 1, "MAE": mae, "RMSE": rmse, "Windows used": best_windows}
             )
 
     def plot_predictions(self):
         plt.figure(figsize=(12, 5))
-        plt.plot(self.true, label='Observé',color='blue', linestyle='--')
-        plt.plot(self.pred, label='Prévu',color='red', linewidth=2)
+        plt.plot(self.true, label='Observed', color='blue', linestyle='--')
+        plt.plot(self.pred, label='Predicted', color='red', linewidth=2)
         plt.legend()
-        titre = "Flexible HAR (Lasso)" if self.fixed_windows is None else f"HAR fixe {self.fixed_windows}"
-        plt.title(f"Walk-forward predictions – {titre} – mode {self.mode}")
+        title = "Flexible HAR (Lasso)" if self.fixed_windows is None else f"Fixed HAR {self.fixed_windows}"
+        plt.title(f"Walk-forward predictions – {title} – mode {self.mode}")
         plt.show()
 
     def summary(self):
         print(pd.DataFrame(self.results))
-
