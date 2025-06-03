@@ -13,10 +13,11 @@ def test_xgboost(df: pd.DataFrame, n_lags: int = 1, n_splits: int = 10):
 
     for lag in range(1, n_lags + 1):
         df[f"vol_lag{lag}"] = df["vol"].shift(lag)
+    
 
-    initial_features = df.columns.difference(["vol"])
-    order_book_cols = [col for col in initial_features if not col.startswith("vol")]
-
+    initial_features = df.columns.difference([ 'vol'])
+    order_book_cols = [col for col in initial_features if col not in ['vol']]
+    
     for col in order_book_cols:
         for lag in range(1, n_lags + 1):
             df[f"{col}_lag{lag}"] = df[col].shift(lag)
@@ -96,7 +97,7 @@ def test_xgboost(df: pd.DataFrame, n_lags: int = 1, n_splits: int = 10):
         results.append({
             "Window": i + 1,
             "RMSE": rmse / 100,
-            "MAE": mae
+            "MAE": mae / 100
         })
 
 

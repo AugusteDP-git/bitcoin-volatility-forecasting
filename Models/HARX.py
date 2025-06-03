@@ -50,6 +50,7 @@ class HARXSimulator:
 
             Y_train_all = self.Y[self.shift:][train_start:train_end]
             Y_test = self.Y[self.shift:][test_start:test_end]
+            
 
             X_train = self.df[selected_features].values[:-self.shift][train_start:train_end]
             X_test = self.df[selected_features].values[:-self.shift][test_start:test_end]
@@ -84,11 +85,4 @@ class HARXSimulator:
         plt.plot(self.pred, label='predictions',color='red',linewidth=2)
         plt.legend()
         if self.GCT:
-            plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with GCT features")
-        else:
-            plt.title(f"Walk-forward predictions - HARX({', '.join(map(str, self.har_windows))}) with {self.mode} testing")
-        plt.show()
-
-    def summary(self):
-        df_results = pd.DataFrame(self.results)
-        print(df_results)
+            plt.title(f"Walk-forward 
