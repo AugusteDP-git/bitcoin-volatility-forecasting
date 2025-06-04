@@ -35,7 +35,7 @@ class DualLSTMModel_garch(nn.Module):
         
        
 
-    def train_model(self, x_vol, x_ord, x_garch, y, learning_rate = 0.001, weight_decay=0.0001, epochs=5, batch_size=32):
+    def train_model(self, x_vol, x_ord, x_garch, y, learning_rate = 0.001, weight_decay=0.0001, epochs=5, batch_size=200):
         device = get_device()
         self.to(device)
         dataset = torch.utils.data.TensorDataset(x_vol, x_ord, x_garch, y)

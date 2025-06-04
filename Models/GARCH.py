@@ -2,6 +2,7 @@ from arch import arch_model
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 def garch_forecast(alpha0, alpha1, beta1, ut, ht, steps_ahead=1):
     indicator = 1 if ut < 0 else 0
@@ -38,7 +39,7 @@ def split_mean_rmse(rmse_series, n_intervals=10):
     return mean_rmses
 
 
-def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
+def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot=True):
     df_returns = df_returns.copy()
     df_vol = df_vol.copy()
     df_returns['timestamp'] = pd.to_datetime(df_returns['timestamp'])
@@ -63,14 +64,12 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
 
         for i in range(lb, N - 1):
             train_set = df.iloc[i - lb:i]
-
             model = arch_model(train_set['returns'], mean='Zero', vol='Garch', p=1, q=1, dist='skewt', rescale=False)
             model_fit = model.fit(disp='off', show_warning=False)
 
             alpha0 = model_fit.params['omega']
             alpha1 = model_fit.params['alpha[1]']
             beta1 = model_fit.params['beta[1]']
-
             ut = train_set['returns'].iloc[-1]
             ht = model_fit.conditional_volatility.iloc[-1] ** 2
 
@@ -86,13 +85,12 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
             best_rmse = mean_rmse
             best_lb = lb
 
-
-    results = []
-    all_preds = []
-    all_trues = []
-
     lb = best_lb
     print(f"Starting volatility prediction...")
+
+    all_preds = []
+    all_trues = []
+    all_timestamps = []
 
     for i in range(lb, N - 1):
         train_set = df.iloc[i - lb:i]
@@ -103,7 +101,6 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
         alpha0 = model_fit.params['omega']
         alpha1 = model_fit.params['alpha[1]']
         beta1 = model_fit.params['beta[1]']
-
         ut = train_set['returns'].iloc[-1]
         ht = model_fit.conditional_volatility.iloc[-1] ** 2
 
@@ -111,36 +108,22 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
         pred_scaled = pred_vol * 100 * np.sqrt(365)
 
         true_vol = df['vol'].iloc[i + 1]
+        timestamp = df['timestamp'].iloc[i + 1]
 
         all_preds.append(pred_scaled)
         all_trues.append(true_vol)
+        all_timestamps.append(timestamp)
 
-        rmse = np.sqrt((pred_scaled - true_vol)**2)
-        mae = abs(pred_scaled - true_vol)
+    # Construct prediction DataFrame with timestamps
+    preds_df = pd.DataFrame({
+        'pred': all_preds,
+        'timestamp': all_timestamps
+    })
 
-        results.append({
-            "Window": i + 1,
-            "RMSE": rmse / 100,
-            "MAE": mae,
-            "Alpha0": alpha0,
-            "Alpha1": alpha1,
-            "Beta1": beta1,
-            "PredictedGarch": pred_scaled
-        })
-
-    results_df = pd.DataFrame(results)
-    rmse_list = results_df['RMSE'].values
-    mean_rmse_intervals = split_mean_rmse(rmse_list, 10)
     if plot:
-        # Calculate mean RMSE for 10 equal intervals
-
-
-        print("\nMean RMSE for each of the 10 intervals:")
-        for idx, val in enumerate(mean_rmse_intervals):
-            print(f"Interval {idx+1}: {val:.5f}")
-
+        print("\nPlotting GARCH predictions...")
         plt.figure(figsize=(14, 6))
-        plt.plot(pd.Series(all_trues).reset_index(drop=True), label="True Volatility", color='blue', linestyle = '--')
+        plt.plot(pd.Series(all_trues).reset_index(drop=True), label="True Volatility", color='blue', linestyle='--')
         plt.plot(pd.Series(all_preds).reset_index(drop=True), label="Predicted Volatility", color='red')
         plt.title(f"GARCH - Combined Volatility Prediction (lookback={lb})")
         plt.xlabel("Time Step")
@@ -149,5 +132,10 @@ def test_garch(df_returns: pd.DataFrame, df_vol: pd.DataFrame, plot = True):
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+        
+        splits = np.array_split(all_preds, 10)
+        all_trues = np.array_split(all_trues,10)
+        for i in range(4,len(splits)):
+            print(f'Interval {i+1}: Mean RMSE = {np.sqrt(mean_squared_error(splits[i], all_trues[i]))/100:.4f}, mean MAE = {mean_absolute_error(splits[i], all_trues[i])/100:.4f}')
 
-    return results_df, mean_rmse_intervals
+    return preds_df, best_lb

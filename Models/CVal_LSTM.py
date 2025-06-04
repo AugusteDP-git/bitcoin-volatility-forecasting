@@ -12,7 +12,7 @@ param_grid = {
 }
 
 
-def grid_search_LSTM(param_grid, X_train_returns, X_train_orderbook, y_train, X_val_returns, X_val_orderbook, y_val, epochs=5, batch_size=32):
+def grid_search_LSTM(param_grid, X_train_returns, X_train_orderbook, y_train, X_val_returns, X_val_orderbook, y_val, epochs=5, batch_size=200):
     best_rmse = float('inf')
     best_params = None
     best_model = None
