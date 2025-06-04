@@ -99,4 +99,43 @@ def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10, alpha=5
                 full_params,
                 dtrain,
                 num_boost_round=params['n_estimators'],
-                obj=exp_weighted_mse_obj(alp
+                obj=exp_weighted_mse_obj(alpha),
+                evals=[(dval, 'eval')],
+                verbose_eval=False
+            )
+
+            preds_val = model.predict(dval)
+            rmse = np.sqrt(mean_squared_error(y_cv, preds_val))
+
+            if rmse < best_rmse:
+                best_rmse = rmse
+                best_model = model
+
+        dtest = xgb.DMatrix(X_test, label=y_test)
+        preds_test = best_model.predict(dtest)
+        preds_df = pd.DataFrame({'pred': preds_test, 'timestamp': ts_test})
+        all_preds = pd.concat([all_preds, preds_df], ignore_index=True)
+        all_trues.extend(y_test)
+
+        results.append({
+            "Window": i + 1,
+            "RMSE": np.sqrt(mean_squared_error(y_test, preds_test)) / 100,
+            "MAE": mean_absolute_error(y_test, preds_test) / 100
+        })
+
+    results_df = pd.DataFrame(results)
+    print("\n[Summary]")
+    print(results_df)
+
+    plt.figure(figsize=(14, 6))
+    plt.plot(all_trues, label="True Volatility", color='blue', linestyle='--')
+    plt.plot(all_preds['pred'], label="Predicted Volatility", color='red', linewidth=2)
+    plt.title("XGBoost - Custom Exp Weighted MSE Volatility Prediction")
+    plt.xlabel("Time Step")
+    plt.ylabel("Volatility")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+    return results_df, all_preds, all_trues
