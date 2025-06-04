@@ -53,8 +53,9 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
   - Crypto Fear and Greed Index (FNG)
   - Crypto Bull & Bear Index (CBI)
 
-Available at: -[https://huggingface.co/datasets/danilocorsi/LLMs-Sentiment-Augmented-Bitcoin-Dataset](https://huggingface.co/datasets/danilocorsi/LLMs-Sentiment-Augmented-Bitcoin-Dataset) -- https://huggingface.co/datasets/AisotTechnologies/aisot_btc_lob_trades
-
+Available at:
+- [LLMs-Sentiment-Augmented-Bitcoin-Dataset](https://huggingface.co/datasets/danilocorsi/LLMs-Sentiment-Augmented-Bitcoin-Dataset)
+- [Aisot BTC Order Book Trades](https://huggingface.co/datasets/AisotTechnologies/aisot_btc_lob_trades)
 ## 📬 Contact
 
 For questions, suggestions, or collaboration inquiries, feel free to reach out to the authors:
