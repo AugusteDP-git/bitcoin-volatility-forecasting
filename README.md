@@ -21,7 +21,7 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 ```
 .
 ├── Data/
-│   ├── Data_cleaning.ip       # Processing Aisot order book data
+│   ├── Data_cleaning.py       # Processing Aisot order book data
 │   ├── DMF.ipy                # Data manipulation functions
 │   ├── GCT.ipynb              # Granger Causality Test
 │   ├── KPSS.ipynb             # Stationarity testing (KPSS)
