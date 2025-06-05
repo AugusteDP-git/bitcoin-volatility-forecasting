@@ -63,4 +63,3 @@ For questions, suggestions, or collaboration inquiries, feel free to reach out t
 - **Auguste Darracq Paries** – [adarracq@ethz.ch](mailto:adarracq@ethz.ch)
 - **Yann Adorno** – [yadorno@ethz.ch](mailto:yadorno@ethz.ch)
 - **Laurent Martini–Bonnet** – [martinil@ethz.ch](mailto:martinil@ethz.ch)
-- **Antoine Allain** – [aallain@ethz.ch](mailto:aallain@ethz.ch)
