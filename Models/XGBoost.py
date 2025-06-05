@@ -134,4 +134,13 @@ def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10):
 
     plt.figure(figsize=(14, 6))
     plt.plot(all_trues, label="True Volatility", color='blue', linestyle='--')
-    plt.plot(all_preds['pred'], label="Predicted Volatility", color='red', linewid
+    plt.plot(all_preds['pred'], label="Predicted Volatility", color='red', linewidth=2)
+    plt.title("XGBoost - Custom Exp Weighted MSE Volatility Prediction")
+    plt.xlabel("Time Step")
+    plt.ylabel("Volatility")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+    return results_df, all_preds, all_trues
