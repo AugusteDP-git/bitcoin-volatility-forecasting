@@ -85,13 +85,14 @@ class HARSimulator:
 
             mae = mean_absolute_error(Y_test, preds)/100
             rmse = np.sqrt(mean_squared_error(Y_test, preds)) / 100
-
             self.results.append({
                 "window": outer + 1,
                 "MAE": mae,
                 "RMSE": rmse,
                 "Used Windows": best_windows
             })
+        for i in range(len(self.results)):
+            print(f"Window {self.results[i]['window']}: MAE = {self.results[i]['MAE']:.4f}, RMSE = {self.results[i]['RMSE']:.4f}")
 
     def plot_predictions(self):
         plt.figure(figsize=(12, 5))

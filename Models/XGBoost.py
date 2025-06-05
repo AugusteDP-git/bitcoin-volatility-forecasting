@@ -17,7 +17,7 @@ def exp_weighted_mse_obj(alpha=5.0):
         return grad, hess
     return loss
 
-def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10, alpha=5.0):
+def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10):
     if 'timestamp' not in df.columns:
         raise ValueError("'timestamp' column must be present in input DataFrame.")
 
@@ -29,6 +29,9 @@ def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10, alpha=5
 
     for lag in range(1, n_lags_vol + 1):
         lagged_features.append(df["vol"].shift(lag).rename(f"vol_lag{lag}"))
+        
+    for wl in [1,6,24]:
+            df[f'roll_{wl}'] = df['vol'].shift(1).rolling(wl, min_periods=1).mean()
 
     for col, max_lag in feat_lags.items():
         if col not in df.columns:
@@ -79,37 +82,39 @@ def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10, alpha=5
 
         best_rmse = float("inf")
         best_model = None
+        
 
         for params in param_grid:
-            full_params = {
-                'max_depth': params['max_depth'],
-                'eta': 0.1,
-                'reg_lambda': params['reg_lambda'],
-                'gamma': params['gamma'],
-                'subsample': 0.8,
-                'colsample_bytree': 0.8,
-                'random_state': 42,
-                'verbosity': 0
-            }
+            for alpha in [0,3,5,7,10]:
+                full_params = {
+                    'max_depth': params['max_depth'],
+                    'eta': 0.1,
+                    'reg_lambda': params['reg_lambda'],
+                    'gamma': params['gamma'],
+                    'subsample': 0.8,
+                    'colsample_bytree': 0.8,
+                    'random_state': 42,
+                    'verbosity': 0
+                }
 
-            dtrain = xgb.DMatrix(X_train, label=y_train)
-            dval = xgb.DMatrix(X_cv, label=y_cv)
+                dtrain = xgb.DMatrix(X_train, label=y_train)
+                dval = xgb.DMatrix(X_cv, label=y_cv)
 
-            model = xgb.train(
-                full_params,
-                dtrain,
-                num_boost_round=params['n_estimators'],
-                obj=exp_weighted_mse_obj(alpha),
-                evals=[(dval, 'eval')],
-                verbose_eval=False
-            )
+                model = xgb.train(
+                    full_params,
+                    dtrain,
+                    num_boost_round=params['n_estimators'],
+                    obj=exp_weighted_mse_obj(alpha),
+                    evals=[(dval, 'eval')],
+                    verbose_eval=False
+                )
 
-            preds_val = model.predict(dval)
-            rmse = np.sqrt(mean_squared_error(y_cv, preds_val))
+                preds_val = model.predict(dval)
+                rmse = np.sqrt(mean_squared_error(y_cv, preds_val))
 
-            if rmse < best_rmse:
-                best_rmse = rmse
-                best_model = model
+                if rmse < best_rmse:
+                    best_rmse = rmse
+                    best_model = model
 
         dtest = xgb.DMatrix(X_test, label=y_test)
         preds_test = best_model.predict(dtest)
