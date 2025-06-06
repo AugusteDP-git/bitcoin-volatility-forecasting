@@ -59,7 +59,7 @@ Available at:
 - [Aisot BTC Order Book Trades](https://huggingface.co/datasets/AisotTechnologies/aisot_btc_lob_trades)
 ## 📬 Contact
 
-For questions, suggestions, or collaboration inquiries, feel free to reach out to the authors:
+For questions, suggestions, or collaboration inquiries, feel free to reach out to us:
 
 - **Auguste Darracq Paries** – [adarracq@ethz.ch](mailto:adarracq@ethz.ch)
 - **Yann Adorno** – [yadorno@ethz.ch](mailto:yadorno@ethz.ch)
