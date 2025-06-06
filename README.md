@@ -21,6 +21,7 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 ```
 .
 ├── Data/
+│   ├── ADF.ipynb              # Augmented Dickey-Fuller
 │   ├── Data_cleaning.py       # Processing Aisot order book data
 │   ├── DMF.ipy                # Data manipulation functions
 │   ├── GCT.ipynb              # Granger Causality Test
