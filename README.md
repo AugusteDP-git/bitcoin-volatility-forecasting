@@ -47,8 +47,6 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 ```
 
 
-## 📈 Key Findings
-
 ## 📊 Datasets
 
 - **Order Book**: BTC/USD limit order book data from Bitstamp, sampled every 30 seconds.
