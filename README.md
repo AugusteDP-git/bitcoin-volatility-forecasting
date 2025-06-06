@@ -21,11 +21,11 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 ```
 .
 ├── Data/
-│   ├── ADF.ipynb              # Augmented Dickey-Fuller
+│   ├── ADF.ipynb              # Augmented Dickey-Fuller test
 │   ├── Data_cleaning.py       # Processing Aisot order book data
 │   ├── DMF.ipy                # Data manipulation functions
 │   ├── GCT.ipynb              # Granger Causality Test
-│   ├── KPSS.ipynb             # Stationarity testing (KPSS)
+│   ├── KPSS.ipynb             # Kwiatkowski-Phillips-Schmidt-Shin test
 │   └── SPP.py                 # Sentiment preprocessing pipeline
 ├── Model_eval/
 │   ├── LSTM_eval.py           # LSTM model evaluation
