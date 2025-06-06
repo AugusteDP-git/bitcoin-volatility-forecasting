@@ -66,9 +66,9 @@ def test_xgboost(df: pd.DataFrame, feat_lags, n_lags_vol=5, n_splits=10):
         print(f"\n[Window {i + 1}] Training on intervals {i}-{i + 2}, validating on {i + 3}, testing on {i + 4}")
 
         df_train = pd.concat(intervals[i:i + 3], axis=0).reset_index(drop=True)
-        df_cv = intervals[i + 3]
-        df_test = intervals[i + 4]
-        ts_test = interval_times[i + 4]
+        df_cv = intervals[i + 3].iloc[5:]
+        df_test = intervals[i + 4].iloc[5:]
+        ts_test = interval_times[i + 4].iloc[5:]
 
         feature_cols = df_train.columns.difference(["vol"])
         scaler = StandardScaler()
