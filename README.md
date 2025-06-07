@@ -42,6 +42,7 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 │   ├── TM_IG.py               # Inverse Gamma Temporal Mixture Model
 │   ├── TM_SG.py               # Sentiment-augmented Temporal Mixture Model
 │   └── XGBoost.py             # XGBoost model
+├── BTC Volatility Forecasting # The pdf of our paper
 ├── LSTM_main.ipynb            # LSTM test notebook
 ├── main.ipynb                 # Main notebook for running experiments
 └── README.md                  # Project documentation
