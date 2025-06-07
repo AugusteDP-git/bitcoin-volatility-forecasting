@@ -29,7 +29,6 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 │   └── SPP.py                 # Sentiment preprocessing pipeline
 ├── Model_eval/
 │   ├── LSTM_eval.py           # LSTM model evaluation
-│   ├── test_fct_lstm_garch.py # LSTM x GARCH model evaluation
 │   └── TM_eval.py             # Temporal Mixture Model evaluation
 ├── Models/
 │   ├── CVal_LSTM.py           # Cross-validation for LSTM
@@ -43,7 +42,7 @@ We evaluate how **order book features** and **news sentiment** contribute to pre
 │   ├── TM_IG.py               # Inverse Gamma Temporal Mixture Model
 │   ├── TM_SG.py               # Sentiment-augmented Temporal Mixture Model
 │   └── XGBoost.py             # XGBoost model
-├── LSTM_GARCH_test.ipynb      # LSTM x GARCH test notebook
+├── LSTM_main.ipynb            # LSTM test notebook
 ├── main.ipynb                 # Main notebook for running experiments
 └── README.md                  # Project documentation
 ```
