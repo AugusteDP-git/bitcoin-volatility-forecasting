@@ -4,7 +4,7 @@ This repository contains the source code and data references for our paper: **"M
 
 ## 🧠 Abstract
 
-Forecasting financial market volatility is central to many areas of quantitative finance, including risk management, algorithmic trading, and derivative pricing. In this work, we investigate the modeling of **realized volatility for Bitcoin**, a highly volatile and speculative asset.
+In this work, we investigate the modeling of **realized volatility for Bitcoin**, a highly volatile and speculative asset.
 
 We compare a range of models—both traditional and modern—including:
 
